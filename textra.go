@@ -135,3 +135,17 @@ func (m StructTags) FilterMany(tags ...string) StructTags {
 
 	return filtered
 }
+
+// FilterFunc returns a map of fields and associated tags for given tag keys.
+// fn is called for each field to decide whether that field should be included or not.
+func (m StructTags) FilterFunc(fn func(string, Tags) bool) StructTags {
+	filtered := make(StructTags, len(m)/2)
+
+	for field, tags := range m {
+		if fn(field, tags) {
+			filtered[field] = tags
+		}
+	}
+
+	return filtered
+}

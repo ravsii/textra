@@ -172,3 +172,50 @@ func TestFilterMany(t *testing.T) {
 		}
 	}
 }
+
+func TestFilterFunc(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name string
+		str  any
+		fn   func(string, textra.Tags) bool
+		want textra.StructTags
+	}{
+		{
+			"look for threetag", (*Populated)(nil),
+			func(field string, _ textra.Tags) bool {
+				return field == "ThreeTag"
+			},
+			textra.StructTags{
+				"ThreeTag": []textra.Tag{
+					{"pg", "three_tag", nil},
+					{"json", "three_tag", nil},
+				},
+			},
+		},
+		{
+			"look for len3", (*Populated)(nil),
+			func(_ string, tags textra.Tags) bool {
+				return len(tags) == 3
+			},
+			textra.StructTags{
+				"TwoTag": []textra.Tag{
+					{"pg", "pgvalue", nil},
+					{"json", "two_tag", []string{"omitempty"}},
+					{"test", "two_tag", []string{"opt1", "opt2"}},
+				},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		_ = testCase
+
+		got := textra.Extract(testCase.str).FilterFunc(testCase.fn)
+
+		if !reflect.DeepEqual(got, testCase.want) && (len(got) != 0 && len(testCase.want) != 0) {
+			t.Errorf("%s: got %v want %v", testCase.name, got, testCase.want)
+		}
+	}
+}

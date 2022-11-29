@@ -51,9 +51,11 @@ Filtered: 	 map[SqlOnly:[sql:sql_only] WithTags:[json:with_tags sql:with_tag]]
 Filtered Many: 	 map[SqlOnly:[sql:sql_only] WithTag:[json:with_tag,omitempty] WithTags:[json:with_tags sql:with_tag]]
 ```
 
-## TODO:
+## Improvements
 
 - [ ] Add blacklisting
-- [ ] Add better filtering options (FilterFunc for example)
-- [ ] Some sugar for common tags, like json's omitempty
+- [X] Add FilterFunc
+- [ ] Some sugar for common tags
+	- [ ] Omitempty for "*,omitempty"
+	- [ ] Ignored for "-"
 - [ ] Better string representation
