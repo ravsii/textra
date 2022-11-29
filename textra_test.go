@@ -17,8 +17,6 @@ type Populated struct {
 }
 
 func TestExtract(t *testing.T) {
-	t.Parallel()
-
 	expected := textra.StructTags{
 		"OneTag": []textra.Tag{{Tag: "test", Value: "notag"}},
 		"TwoTag": []textra.Tag{
@@ -57,8 +55,6 @@ func TestExtract(t *testing.T) {
 }
 
 func TestFilter(t *testing.T) {
-	t.Parallel()
-
 	testCases := []struct {
 		name    string
 		str     any
@@ -119,8 +115,6 @@ func TestFilter(t *testing.T) {
 }
 
 func TestFilterMany(t *testing.T) {
-	t.Parallel()
-
 	testCases := []struct {
 		name    string
 		str     any
@@ -174,8 +168,6 @@ func TestFilterMany(t *testing.T) {
 }
 
 func TestFilterFunc(t *testing.T) {
-	t.Parallel()
-
 	testCases := []struct {
 		name string
 		str  any
