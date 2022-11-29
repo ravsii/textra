@@ -55,6 +55,12 @@ func Extract(str any) StructTags {
 
 	for i := 0; i < amount; i++ {
 		tag := typ.Field(i).Tag
+
+		s := string(tag)
+		if len(s) == 0 {
+			continue
+		}
+
 		tags := parseTags(tag)
 		structTags[typ.Field(i).Name] = tags
 	}
@@ -63,12 +69,7 @@ func Extract(str any) StructTags {
 }
 
 func parseTags(tag reflect.StructTag) Tags {
-	s := string(tag)
-	if len(s) == 0 {
-		return nil
-	}
-
-	tagsStr := whitespaceRegexp.ReplaceAllLiteralString(s, " ")
+	tagsStr := whitespaceRegexp.ReplaceAllLiteralString(string(tag), " ")
 	splitted := strings.Split(tagsStr, " ")
 	tags := make(Tags, 0, len(splitted))
 
