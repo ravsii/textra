@@ -51,20 +51,24 @@ func Extract(str any) StructTags {
 	}
 
 	amount := typ.NumField()
-	strTags := make(StructTags, amount)
+	structTags := make(StructTags, amount)
 
 	for i := 0; i < amount; i++ {
 		tag := typ.Field(i).Tag
 		tags := parseTags(tag)
-
-		strTags[typ.Field(i).Name] = tags
+		structTags[typ.Field(i).Name] = tags
 	}
 
-	return strTags
+	return structTags
 }
 
 func parseTags(tag reflect.StructTag) Tags {
-	tagsStr := whitespaceRegexp.ReplaceAllLiteralString(string(tag), " ")
+	s := string(tag)
+	if len(s) == 0 {
+		return nil
+	}
+
+	tagsStr := whitespaceRegexp.ReplaceAllLiteralString(s, " ")
 	splitted := strings.Split(tagsStr, " ")
 	tags := make(Tags, 0, len(splitted))
 
@@ -95,10 +99,10 @@ func parseTags(tag reflect.StructTag) Tags {
 }
 
 // Filter returns a map of fields and associated tag, if given tag key is present.
-func (m *StructTags) Filter(tag string) map[string]Tag {
+func (m StructTags) Filter(tag string) map[string]Tag {
 	newMap := make(map[string]Tag, 0)
 
-	for field, tags := range *m {
+	for field, tags := range m {
 		for _, t := range tags {
 			if t.Tag == tag {
 				newMap[field] = t
@@ -112,14 +116,14 @@ func (m *StructTags) Filter(tag string) map[string]Tag {
 
 // FilterMany returns a map of fields and associated tags for given tag keys.
 // If no tags are passed, nil is returned.
-func (m *StructTags) FilterMany(tags ...string) StructTags {
+func (m StructTags) FilterMany(tags ...string) StructTags {
 	if len(tags) == 0 {
 		return nil
 	}
 
 	newMap := make(StructTags, 0)
 
-	for field, strTags := range *m {
+	for field, strTags := range m {
 		foundTags := make(Tags, 0)
 
 		for _, t := range strTags {
