@@ -1,5 +1,4 @@
-// package textra
-package main
+package textra
 
 import (
 	"reflect"
