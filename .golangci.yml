@@ -35,10 +35,11 @@ linters:
     - noctx
     - nonamedreturns
     - nosnakecase
+    - paralleltest
     - rowserrcheck
     - scopelint
     - sqlclosecheck
-    # - structcheck
+    - structcheck
     - tparallel
     - unparam
     - varcheck
