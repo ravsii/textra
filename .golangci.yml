@@ -58,6 +58,7 @@ linters-settings:
       # Ignoring any str>int parsing functions because they ask for
       # base and bit size.
       - "strconv.Parse*"
+      - "make*"
 
   tagliatelle:
     case:

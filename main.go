@@ -98,20 +98,20 @@ func parseTags(tag reflect.StructTag) Tags {
 	return tags
 }
 
-// Filter returns a map of fields and associated tag, if given tag key is present.
-func (m StructTags) Filter(tag string) map[string]Tag {
-	newMap := make(map[string]Tag, 0)
+// Filter returns a map of fields and their tags, if a field has given tag.
+func (m StructTags) Filter(tag string) StructTags {
+	filtered := make(StructTags, len(m)/2)
 
 	for field, tags := range m {
 		for _, t := range tags {
 			if t.Tag == tag {
-				newMap[field] = t
+				filtered[field] = tags
 				break
 			}
 		}
 	}
 
-	return newMap
+	return filtered
 }
 
 // FilterMany returns a map of fields and associated tags for given tag keys.
@@ -121,19 +121,16 @@ func (m StructTags) FilterMany(tags ...string) StructTags {
 		return nil
 	}
 
-	newMap := make(StructTags, 0)
+	filtered := make(StructTags, len(m)/2)
 
 	for field, strTags := range m {
-		foundTags := make(Tags, 0)
-
 		for _, t := range strTags {
-			if !slices.Contains(tags, t.Tag) {
-				foundTags = append(foundTags, t)
+			if slices.Contains(tags, t.Tag) {
+				filtered[field] = strTags
+				break
 			}
 		}
-
-		newMap[field] = foundTags
 	}
 
-	return newMap
+	return filtered
 }
