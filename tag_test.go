@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Ravcii/textra"
+	"github.com/Ravsii/textra"
 )
 
 func TestByName(t *testing.T) {

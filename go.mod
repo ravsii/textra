@@ -1,4 +1,4 @@
-module github.com/Ravcii/textra
+module github.com/Ravsii/textra
 
 go 1.19
 

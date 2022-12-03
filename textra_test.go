@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Ravcii/textra"
+	"github.com/Ravsii/textra"
 )
 
 type Empty struct{}
