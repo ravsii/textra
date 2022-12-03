@@ -9,6 +9,9 @@ import (
 // StructTags is a map that stores a slice of tags related to each field in a struct.
 type StructTags map[string]Tags
 
+// StructTag is a map like StructTags but it holds only 1 tag.
+type StructTag map[string]Tag
+
 // Extract accept a struct (or a pointer to a struct)
 // and returns a map of fields and their tags.
 func Extract(str any) StructTags {
@@ -102,6 +105,25 @@ func (m StructTags) RemoveFields(fields ...string) StructTags {
 		}
 
 		filtered[field] = tags
+	}
+
+	return filtered
+}
+
+// Only returns StructTag (instead of StructTags like most other) of a
+// field and a tag with a given name.
+func (m StructTags) Only(name string) StructTag {
+	filtered := make(StructTag, 0)
+
+	for field, tags := range m {
+		for _, tag := range tags {
+			if tag.Tag == name {
+				filtered[field] = tag
+
+				// Breaks from tags loop, continues on fields loop.
+				break
+			}
+		}
 	}
 
 	return filtered
