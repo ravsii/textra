@@ -91,3 +91,18 @@ func (m StructTags) FilterFunc(fn func(string, Tags) bool) StructTags {
 
 	return filtered
 }
+
+// RemoveFields copies original map but skips given fields on each field.
+func (m StructTags) RemoveFields(fields ...string) StructTags {
+	filtered := make(StructTags, len(m)-len(fields))
+
+	for field, tags := range m {
+		if slices.Contains(fields, field) {
+			continue
+		}
+
+		filtered[field] = tags
+	}
+
+	return filtered
+}
