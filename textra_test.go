@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Ravsii/textra"
+	"github.com/ravsii/textra"
 )
 
 type Empty struct{}
