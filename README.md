@@ -1,6 +1,6 @@
 # Textra
 
-Textra is a simple and fast *****t*****ags *****extra*****ctor package that helps to work with structs tags.
+Textra is a simple and fast **\***t**\***ags **\***extra**\***ctor package that helps to work with structs tags.
 
 Textra parses struct tags and returns them as a slice. It also does provide extra functionality like filtering.
 
@@ -37,25 +37,21 @@ type Tester struct {
 func main() {
 	tags := textra.Extract((*Tester)(nil))
 	fmt.Println("Basic: ", tags)
-	filtered := tags.Filter("sql")
-	fmt.Println("Filtered: ", filtered)
-	filteredMany := tags.FilterMany("sql", "json")
-	fmt.Println("Filtered Many: ", filteredMany)
 }
 
 ```
 
 ```
 Basic: 		 map[SqlOnly:[sql:sql_only] WithTag:[json:with_tag,omitempty] WithTags:[json:with_tags sql:with_tag]]
-Filtered: 	 map[SqlOnly:[sql:sql_only] WithTags:[json:with_tags sql:with_tag]]
-Filtered Many: 	 map[SqlOnly:[sql:sql_only] WithTag:[json:with_tag,omitempty] WithTags:[json:with_tags sql:with_tag]]
 ```
 
 ## Improvements
 
 - [ ] Add blacklisting
-- [X] Add FilterFunc
-- [ ] Some sugar for common tags
-	- [ ] Omitempty for "*,omitempty"
-	- [ ] Ignored for "-"
+- [ ] Better README.md
+- [ ] Examples for go.dev
+- [x] Some sugar for common tags
+  - [x] ByName to get tag for each field
+  - [x] Omitempty for "\*,omitempty"
+  - [x] Ignored for "-"
 - [ ] Better string representation
