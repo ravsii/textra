@@ -24,9 +24,9 @@ func (t Tags) ByName(name string) (Tag, bool) {
 //
 //	json:"value".
 type Tag struct {
-	Tag      string
-	Value    string
-	Optional []string
+	Tag      string   `json:"tag"`
+	Value    string   `json:"value"`
+	Optional []string `json:"optional,omitempty"`
 }
 
 // OmitEmpty returns true if t.Optional contains "omitempty".
