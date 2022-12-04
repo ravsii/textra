@@ -49,3 +49,13 @@ func (t Tag) String() string {
 
 	return b.String()
 }
+
+func (t Tags) String() string {
+	tags := make([]string, 0, len(t))
+
+	for _, tag := range t {
+		tags = append(tags, tag.String())
+	}
+
+	return "[" + strings.Join(tags, " ") + "]"
+}
