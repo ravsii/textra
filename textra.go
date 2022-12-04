@@ -1,21 +1,36 @@
 package textra
 
 import (
+	"fmt"
 	"reflect"
+	"strings"
 
 	"golang.org/x/exp/slices"
 )
 
-// StructTags is a map that stores a slice of tags related to each field in a struct.
-type StructTags map[string]Tags
+// Field represents a one struct field.
+type Field struct {
+	Name string
+	// Type is stringified type, like "time.Time" or "*string"
+	Type string
+	Tags Tags
+}
 
-// StructTag is a map like StructTags but it holds only 1 tag.
-type StructTag map[string]Tag
+// FieldTag is like but it has only one tag.
+// It's used as output of some functions (like Only()).
+type FieldTag struct {
+	Name string
+	Type string
+	Tag  Tag
+}
 
-// Extract accept a struct (or a pointer to a struct)
-// and returns a map of fields and their tags.
-func Extract(str any) StructTags {
-	typ := reflect.TypeOf(str)
+// Struct represents a single struct.
+type Struct []Field
+
+// Extract accept a struct (or a pointer to a struct) and returns a map of fields and their tags.
+// if src is not a struct or a pointer to a struct, nil is returned.
+func Extract(src any) Struct {
+	typ := reflect.TypeOf(src)
 
 	// If str is a struct pointer
 	if typ.Kind() == reflect.Pointer {
@@ -27,40 +42,44 @@ func Extract(str any) StructTags {
 	}
 
 	amount := typ.NumField()
-	structTags := make(StructTags, amount)
+	result := make(Struct, 0, amount)
+
+	var f reflect.StructField
 
 	for i := 0; i < amount; i++ {
-		tag := typ.Field(i).Tag
-		tags := parseTags(tag)
-		structTags[typ.Field(i).Name] = tags
+		f = typ.Field(i)
+
+		result = append(result, Field{
+			Name: f.Name,
+			Type: f.Type.Name(),
+			Tags: parseTags(f.Tag),
+		})
 	}
 
-	return structTags
+	return result
 }
 
 // RemoveEmpty returns a map without fields that has no tags.
-func (m StructTags) RemoveEmpty(tag string) StructTags {
-	filtered := make(StructTags, 0)
+func (s Struct) RemoveEmpty(tag string) Struct {
+	filtered := make(Struct, 0)
 
-	for field, tags := range m {
-		if len(tags) == 0 {
-			continue
+	for _, field := range s {
+		if len(field.Tags) != 0 {
+			filtered = append(filtered, field)
 		}
-
-		filtered[field] = tags
 	}
 
 	return filtered
 }
 
-// Filter returns a map of fields and their tags, if a field has given tag.
-func (m StructTags) Filter(tag string) StructTags {
-	filtered := make(StructTags, 0)
+// ByTagName returns a slice of fields which contains a given tag.
+func (s Struct) ByTagName(tag string) Struct {
+	filtered := make(Struct, 0)
 
-	for field, tags := range m {
-		for _, t := range tags {
+	for _, field := range s {
+		for _, t := range field.Tags {
 			if t.Tag == tag {
-				filtered[field] = tags
+				filtered = append(filtered, field)
 				break
 			}
 		}
@@ -69,20 +88,14 @@ func (m StructTags) Filter(tag string) StructTags {
 	return filtered
 }
 
-// FilterAny returns a map of fields if any of the tag present in tags.
-func (m StructTags) FilterAny(tags ...string) StructTags {
-	if len(tags) == 0 {
-		return nil
-	}
+// ByTagNames returns a slice of fields if any of the tags is present in tag string.
+func (s Struct) ByTagNames(tags ...string) Struct {
+	filtered := make(Struct, 0)
 
-	filtered := make(StructTags, 0)
-
-	for field, strTags := range m {
-		for _, t := range strTags {
+	for _, field := range s {
+		for _, t := range field.Tags {
 			if slices.Contains(tags, t.Tag) {
-				filtered[field] = strTags
-
-				// Breaks from tags loop, continues on fields loop.
+				filtered = append(filtered, field)
 				break
 			}
 		}
@@ -91,14 +104,13 @@ func (m StructTags) FilterAny(tags ...string) StructTags {
 	return filtered
 }
 
-// FilterFunc returns a map of fields and associated tags for given tag keys.
-// fn is called for each field to decide whether that field should be included or not.
-func (m StructTags) FilterFunc(fn func(string, Tags) bool) StructTags {
-	filtered := make(StructTags, 0)
+// FilterFunc returns a slice of fields, filtered by fn(field) == true.
+func (s Struct) FilterFunc(fn func(Field) bool) Struct {
+	filtered := make(Struct, 0)
 
-	for field, tags := range m {
-		if fn(field, tags) {
-			filtered[field] = tags
+	for _, f := range s {
+		if fn(f) {
+			filtered = append(filtered, f)
 		}
 	}
 
@@ -106,35 +118,46 @@ func (m StructTags) FilterFunc(fn func(string, Tags) bool) StructTags {
 }
 
 // RemoveFields copies original map but skips given fields on each field.
-func (m StructTags) RemoveFields(fields ...string) StructTags {
-	filtered := make(StructTags, len(m)-len(fields))
+func (s Struct) RemoveFields(fields ...string) Struct {
+	filtered := make(Struct, 0, len(s)-len(fields))
 
-	for field, tags := range m {
-		if slices.Contains(fields, field) {
-			continue
+	for _, field := range s {
+		if !slices.Contains(fields, field.Name) {
+			filtered = append(filtered, field)
 		}
-
-		filtered[field] = tags
 	}
 
 	return filtered
 }
 
-// Only returns StructTag (instead of StructTags like most other) of a
+// Only returns StructTag (instead of Struct like most other) of a
 // field and a tag with a given name.
-func (m StructTags) Only(name string) StructTag {
-	filtered := make(StructTag, 0)
+func (s Struct) Only(name string) []FieldTag {
+	filtered := make([]FieldTag, 0)
 
-	for field, tags := range m {
-		for _, tag := range tags {
-			if tag.Tag == name {
-				filtered[field] = tag
-
-				// Breaks from tags loop, continues on fields loop.
-				break
-			}
+	for _, field := range s {
+		if tag, ok := field.Tags.ByName(name); ok {
+			filtered = append(filtered, FieldTag{
+				Name: field.Name,
+				Type: field.Type,
+				Tag:  tag,
+			})
 		}
 	}
 
 	return filtered
+}
+
+func (s Struct) String() string {
+	b := strings.Builder{}
+
+	for _, field := range s {
+		b.WriteString(field.String())
+	}
+
+	return b.String()
+}
+
+func (f Field) String() string {
+	return fmt.Sprintf("%s(%s):%s", f.Name, f.Type, f.Tags)
 }
