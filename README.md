@@ -47,11 +47,11 @@ Basic: 		 map[SqlOnly:[sql:sql_only] WithTag:[json:with_tag,omitempty] WithTags:
 
 ## Improvements
 
-- [ ] Add blacklisting
-- [ ] Better README.md
+- [x] Add blacklisting (RemoveFields)
+- [x] Better README.md
 - [ ] Examples for go.dev
 - [x] Some sugar for common tags
   - [x] ByName to get tag for each field
   - [x] Omitempty for "\*,omitempty"
   - [x] Ignored for "-"
-- [ ] Better string representation
+- [x] Better string representation
