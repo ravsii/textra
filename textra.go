@@ -31,12 +31,6 @@ func Extract(str any) StructTags {
 
 	for i := 0; i < amount; i++ {
 		tag := typ.Field(i).Tag
-
-		s := string(tag)
-		if len(s) == 0 {
-			continue
-		}
-
 		tags := parseTags(tag)
 		structTags[typ.Field(i).Name] = tags
 	}
@@ -44,9 +38,24 @@ func Extract(str any) StructTags {
 	return structTags
 }
 
+// RemoveEmpty returns a map without fields that has no tags.
+func (m StructTags) RemoveEmpty(tag string) StructTags {
+	filtered := make(StructTags, 0)
+
+	for field, tags := range m {
+		if len(tags) == 0 {
+			continue
+		}
+
+		filtered[field] = tags
+	}
+
+	return filtered
+}
+
 // Filter returns a map of fields and their tags, if a field has given tag.
 func (m StructTags) Filter(tag string) StructTags {
-	filtered := make(StructTags, len(m)/2)
+	filtered := make(StructTags, 0)
 
 	for field, tags := range m {
 		for _, t := range tags {
@@ -60,19 +69,20 @@ func (m StructTags) Filter(tag string) StructTags {
 	return filtered
 }
 
-// FilterMany returns a map of fields and associated tags for given tag keys.
-// If no tags are passed, nil is returned.
-func (m StructTags) FilterMany(tags ...string) StructTags {
+// FilterAny returns a map of fields if any of the tag present in tags.
+func (m StructTags) FilterAny(tags ...string) StructTags {
 	if len(tags) == 0 {
 		return nil
 	}
 
-	filtered := make(StructTags, len(m)/2)
+	filtered := make(StructTags, 0)
 
 	for field, strTags := range m {
 		for _, t := range strTags {
 			if slices.Contains(tags, t.Tag) {
 				filtered[field] = strTags
+
+				// Breaks from tags loop, continues on fields loop.
 				break
 			}
 		}
@@ -84,7 +94,7 @@ func (m StructTags) FilterMany(tags ...string) StructTags {
 // FilterFunc returns a map of fields and associated tags for given tag keys.
 // fn is called for each field to decide whether that field should be included or not.
 func (m StructTags) FilterFunc(fn func(string, Tags) bool) StructTags {
-	filtered := make(StructTags, len(m)/2)
+	filtered := make(StructTags, 0)
 
 	for field, tags := range m {
 		if fn(field, tags) {

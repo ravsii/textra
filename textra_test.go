@@ -159,7 +159,7 @@ func TestFilterMany(t *testing.T) {
 	for _, testCase := range testCases {
 		_ = testCase
 
-		got := textra.Extract(testCase.str).FilterMany(testCase.lookFor...)
+		got := textra.Extract(testCase.str).FilterAny(testCase.lookFor...)
 
 		if !reflect.DeepEqual(got, testCase.want) && (len(got) != 0 && len(testCase.want) != 0) {
 			t.Errorf("%s: got %v want %v", testCase.name, got, testCase.want)
