@@ -91,7 +91,7 @@ func (s Struct) ByAnyTagName(tags ...string) Struct {
 	return filtered
 }
 
-// ByTagNames returns a slice of fields which contain at all of the given tags.
+// ByTagNames returns a slice of fields which contain all of the given tags.
 func (s Struct) ByTagNames(tags ...string) Struct {
 	filtered := make(Struct, 0)
 
@@ -106,7 +106,7 @@ func (s Struct) ByTagNames(tags ...string) Struct {
 			}
 		}
 
-		if matched == shouldMatch {
+		if matched != 0 && matched == shouldMatch {
 			filtered = append(filtered, field)
 		}
 	}
@@ -139,7 +139,7 @@ func (s Struct) FilterFunc(fn func(Field) bool) Struct {
 }
 
 // RemoveEmpty returns a map without fields that has no tags.
-func (s Struct) RemoveEmpty(tag string) Struct {
+func (s Struct) RemoveEmpty() Struct {
 	filtered := make(Struct, 0)
 
 	for _, field := range s {
