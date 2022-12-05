@@ -41,11 +41,13 @@ func (t Tag) Ignored() bool {
 
 func (t Tag) String() string {
 	b := strings.Builder{}
-	b.WriteString(t.Tag + ":" + t.Value)
+	b.WriteString(t.Tag + ":\"" + t.Value)
 
 	for _, v := range t.Optional {
 		b.WriteString("," + v)
 	}
+
+	b.WriteRune('"')
 
 	return b.String()
 }

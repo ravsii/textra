@@ -1,89 +1,174 @@
 package textra_test
 
-// import (
-// 	"reflect"
-// 	"testing"
+import (
+	"reflect"
+	"testing"
 
-// 	"github.com/ravsii/textra"
-// )
+	"github.com/ravsii/textra"
+)
 
-// func TestByName(t *testing.T) {
-// 	type Tester struct {
-// 		WithName    bool `json:"with_name"`
-// 		WithoutName bool
-// 	}
+func TestByName(t *testing.T) {
+	type Tester struct {
+		Named       struct{} `json:"named"`
+		NamedSpaced struct{} `json:"named spaced"` //nolint: tagliatelle
+		Empty       struct{}
+	}
 
-// 	testCases := []struct {
-// 		testName  string
-// 		fieldName string
-// 		tagName   string
-// 		found     bool
-// 		tag       textra.Tag
-// 	}{
-// 		{"with name", "WithName", "json", true, textra.Tag{"json", "with_name", nil}},
-// 		{"with name not found", "WithName", "sql", false, textra.Tag{}},
-// 		{"without name", "WithoutName", "anything", false, textra.Tag{}},
-// 	}
+	testCases := []struct {
+		testName  string
+		fieldName string
+		tagName   string
+		tagFound  bool
+		tag       textra.Tag
+	}{
+		{"named", "Named", "json", true, textra.Tag{"json", "named", nil}},
+		{"named with space", "NamedSpaced", "json", true, textra.Tag{"json", "named spaced", nil}},
+		{"empty", "Empty", "json", false, textra.Tag{}},
+	}
 
-// 	data := textra.Extract(Tester{})
+	data := textra.Extract(Tester{})
 
-// 	for _, testCase := range testCases {
-// 		testCase := testCase
+	for _, testCase := range testCases {
+		testCase := testCase
 
-// 		tag, found := data[testCase.fieldName].ByName(testCase.tagName)
+		field, found := data.Field(testCase.fieldName)
 
-// 		if found != testCase.found {
-// 			t.Errorf("%s: found: got %t want %t", testCase.testName, found, testCase.found)
-// 		}
+		if !found {
+			t.Errorf("%s: field %s not found", testCase.testName, testCase.fieldName)
+		}
 
-// 		if found == false {
-// 			continue
-// 		}
+		tag, found := field.Tags.ByName(testCase.tagName)
 
-// 		if !reflect.DeepEqual(tag, testCase.tag) {
-// 			t.Errorf("%s: equal: got %s want %s", testCase.testName, tag, testCase.tag)
-// 		}
-// 	}
-// }
+		if found != testCase.tagFound {
+			t.Errorf("%s: found: got %t want %t", testCase.testName, found, testCase.tagFound)
+		}
 
-// func TestOmitEmpty(t *testing.T) {
-// 	type Str struct {
-// 		WithOmit    bool `json:"with_omit,omitempty"`
-// 		WithoutOmit bool `json:"without_omit"`
-// 	}
+		if found == false {
+			continue
+		}
 
-// 	tags := textra.Extract(Str{})
+		if !reflect.DeepEqual(tag, testCase.tag) {
+			t.Errorf("%s: equal: got %s want %s", testCase.testName, tag, testCase.tag)
+		}
+	}
+}
 
-// 	// Should be found
-// 	if tag, _ := tags["WithOmit"].ByName("json"); tag.OmitEmpty() == false {
-// 		t.Errorf("omitempty: got %t want %t", tag.OmitEmpty(), true)
-// 	}
+func TestOmitEmpty(t *testing.T) {
+	type Str struct {
+		WithOmit    bool `json:"with_omit,omitempty"`
+		WithoutOmit bool `json:"without_omit"`
+	}
 
-// 	// Should not be found
-// 	if tag, _ := tags["WithoutOmit"].ByName("json"); tag.OmitEmpty() == true {
-// 		t.Errorf("omitempty: got %t want %t", tag.OmitEmpty(), false)
-// 	}
-// }
+	tags := textra.Extract(Str{})
 
-// func TestIgnored(t *testing.T) {
-// 	type Str struct {
-// 		ID bool `json:"id,omitempty" sql:"-, pk"`
-// 	}
+	omitField, _ := tags.Field("WithOmit")
 
-// 	tags := textra.Extract(Str{})
+	// Should be found, omitempty == true is the expected result
+	if tag, _ := omitField.Tags.ByName("json"); !tag.OmitEmpty() {
+		t.Errorf("omitempty: got %t want %t", tag.OmitEmpty(), true)
+	}
 
-// 	field, ok := tags["ID"]
-// 	if !ok {
-// 		t.Errorf("Tag \"ID\" wasn't found in the struct")
-// 	}
+	nonOmitField, _ := tags.Field("WithoutOmit")
 
-// 	// Should be ignored
-// 	if tag, _ := field.ByName("sql"); tag.Ignored() == false {
-// 		t.Errorf("ignored: got %t want %t", tag.Ignored(), true)
-// 	}
+	// Should not be found, omitempty == false is the expected result
+	if tag, _ := nonOmitField.Tags.ByName("json"); tag.OmitEmpty() {
+		t.Errorf("omitempty: got %t want %t", tag.OmitEmpty(), false)
+	}
+}
 
-// 	// Should not be ignored
-// 	if tag, _ := field.ByName("json"); tag.Ignored() == true {
-// 		t.Errorf("ignored: got %t want %t", tag.Ignored(), false)
-// 	}
-// }
+func TestIgnored(t *testing.T) {
+	type Str struct {
+		ID struct{} `json:"id,omitempty" sql:"-, pk"`
+	}
+
+	str := textra.Extract(Str{})
+
+	field, ok := str.Field("ID")
+	if !ok {
+		t.Errorf("Tag \"ID\" wasn't found in the struct")
+	}
+
+	// Should be ignored
+	if tag, _ := field.Tags.ByName("sql"); !tag.Ignored() {
+		t.Errorf("ignored: got %t want %t", tag.Ignored(), true)
+	}
+
+	// Should not be ignored
+	if tag, _ := field.Tags.ByName("json"); tag.Ignored() {
+		t.Errorf("ignored: got %t want %t", tag.Ignored(), false)
+	}
+}
+
+func TestTagString(t *testing.T) {
+	type Tester struct {
+		TagBig   struct{} `json:"tag_big,omitempty"`
+		TagSmall struct{} `sql:"-,pk" json:"tag_small"`
+	}
+
+	testCases := []struct {
+		testName  string
+		fieldName string
+		tagName   string
+		want      string
+	}{
+		{"big", "TagBig", "json", "json:\"tag_big,omitempty\""},
+		{"small sql", "TagSmall", "sql", "sql:\"-,pk\""},
+		{"small json", "TagSmall", "json", "json:\"tag_small\""},
+	}
+
+	data := textra.Extract(Tester{})
+
+	for _, testCase := range testCases {
+		testCase := testCase
+
+		field, found := data.Field(testCase.fieldName)
+
+		if !found {
+			t.Errorf("%s: field %s not found", testCase.testName, testCase.fieldName)
+		}
+
+		tag, found := field.Tags.ByName(testCase.tagName)
+
+		if !found {
+			t.Errorf("%s: tag %s not found", testCase.testName, testCase.tagName)
+		}
+
+		got := tag.String()
+		if got != testCase.want {
+			t.Errorf("%s: got %s want %s", testCase.testName, got, testCase.want)
+		}
+	}
+}
+
+func TestTagsString(t *testing.T) {
+	type Tester struct {
+		TagBig   struct{} `json:"tag_big,omitempty"`
+		TagSmall struct{} `sql:"-,pk" json:"tag_small"`
+	}
+
+	testCases := []struct {
+		testName  string
+		fieldName string
+		want      string
+	}{
+		{"big", "TagBig", "[json:\"tag_big,omitempty\"]"},
+		{"small sql", "TagSmall", "[sql:\"-,pk\" json:\"tag_small\"]"},
+	}
+
+	data := textra.Extract(Tester{})
+
+	for _, testCase := range testCases {
+		testCase := testCase
+
+		field, found := data.Field(testCase.fieldName)
+
+		if !found {
+			t.Errorf("%s: field %s not found", testCase.testName, testCase.fieldName)
+		}
+
+		got := field.Tags.String()
+		if got != testCase.want {
+			t.Errorf("%s: got %s want %s", testCase.testName, got, testCase.want)
+		}
+	}
+}
