@@ -34,7 +34,10 @@ func parseTag(tagStr string) Tag {
 	}
 
 	if len(vs) > 1 {
-		tag.Optional = vs[1:]
+		tag.Optional = make([]string, 0, len(vs)-1)
+		for _, opt := range vs[1:] {
+			tag.Optional = append(tag.Optional, strings.TrimSpace(opt))
+		}
 	}
 
 	return tag
