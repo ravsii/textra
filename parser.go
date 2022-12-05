@@ -24,13 +24,13 @@ func parseTag(tagStr string) Tag {
 
 	// Removing quotes, "value,  optional" -> value,  optional
 	v := splitted[1][1 : len(splitted[1])-1]
-	// Removing extra spaces, value,  optional -> value,optional
-	v = strings.ReplaceAll(v, " ", "")
+
 	vs := strings.Split(v, ",")
+	value := strings.TrimSpace(vs[0])
 
 	tag := Tag{
 		Tag:   splitted[0],
-		Value: vs[0],
+		Value: value,
 	}
 
 	if len(vs) > 1 {
