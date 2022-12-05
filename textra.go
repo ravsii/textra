@@ -51,7 +51,7 @@ func Extract(src any) Struct {
 
 		result = append(result, Field{
 			Name: f.Name,
-			Type: f.Type.Name(),
+			Type: parseType(f.Type),
 			Tags: parseTags(f.Tag),
 		})
 	}

@@ -98,6 +98,40 @@ func TestGetField(t *testing.T) {
 	}
 }
 
+func TestExtractFieldType(t *testing.T) {
+	testCases := []struct {
+		name     string
+		str      any
+		field    string
+		wantType string
+	}{
+		{"json", struct{ a string }{}, "a", "string"},
+		{"json", struct{ a *string }{}, "a", "*string"},
+		{"json", struct{ a interface{} }{}, "a", "interface"},
+		{"json", struct{ a *interface{} }{}, "a", "*interface {}"},
+		{"json", struct{ a *textra.Field }{}, "a", "*textra.Field"},
+		{"json", struct{ a *[]string }{}, "a", "*[]string"},
+		{"json", struct{ a *[]*string }{}, "a", "*[]*string"},
+		{"json", struct{ a struct{} }{}, "a", "struct"},
+		{"json", struct{ a *struct{} }{}, "a", "*struct {}"},
+	}
+
+	for _, testCase := range testCases {
+		testCase := testCase
+
+		field, ok := textra.Extract(testCase.str).Field(testCase.field)
+		if !ok {
+			t.Errorf("%s: field %s not found", testCase.name, testCase.field)
+		}
+
+		got := field.Type
+
+		if got != testCase.wantType {
+			t.Errorf("%s: got %s want %s", testCase.name, got, testCase.wantType)
+		}
+	}
+}
+
 func TestByTagName(t *testing.T) {
 	type Tester struct {
 		Tag1 struct{} `json:"tag1"`

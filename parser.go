@@ -42,3 +42,11 @@ func parseTag(tagStr string) Tag {
 
 	return tag
 }
+
+func parseType(typ reflect.Type) string {
+	if typ.Kind() == reflect.Pointer {
+		return "*" + typ.Elem().String()
+	}
+
+	return typ.Kind().String()
+}
