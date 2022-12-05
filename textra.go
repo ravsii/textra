@@ -153,7 +153,7 @@ func (s Struct) RemoveEmpty() Struct {
 
 // RemoveFields copies original map but skips given fields on each field.
 func (s Struct) RemoveFields(fields ...string) Struct {
-	filtered := make(Struct, 0, len(s)-len(fields))
+	filtered := make(Struct, 0)
 
 	for _, field := range s {
 		if !slices.Contains(fields, field.Name) {
