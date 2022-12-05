@@ -105,15 +105,15 @@ func TestExtractFieldType(t *testing.T) {
 		field    string
 		wantType string
 	}{
-		{"json", struct{ a string }{}, "a", "string"},
-		{"json", struct{ a *string }{}, "a", "*string"},
-		{"json", struct{ a interface{} }{}, "a", "interface"},
-		{"json", struct{ a *interface{} }{}, "a", "*interface {}"},
-		{"json", struct{ a *textra.Field }{}, "a", "*textra.Field"},
-		{"json", struct{ a *[]string }{}, "a", "*[]string"},
-		{"json", struct{ a *[]*string }{}, "a", "*[]*string"},
-		{"json", struct{ a struct{} }{}, "a", "struct"},
-		{"json", struct{ a *struct{} }{}, "a", "*struct {}"},
+		{"string", struct{ a string }{}, "a", "string"},
+		{"*string", struct{ a *string }{}, "a", "*string"},
+		{"interface", struct{ a interface{} }{}, "a", "interface"},
+		{"*interface {}", struct{ a *interface{} }{}, "a", "*interface {}"},
+		{"*textra.Field", struct{ a *textra.Field }{}, "a", "*textra.Field"},
+		{"*[]string", struct{ a *[]string }{}, "a", "*[]string"},
+		{"*[]*string", struct{ a *[]*string }{}, "a", "*[]*string"},
+		{"struct", struct{ a struct{} }{}, "a", "struct"},
+		{"*struct {}", struct{ a *struct{} }{}, "a", "*struct {}"},
 	}
 
 	for _, testCase := range testCases {
