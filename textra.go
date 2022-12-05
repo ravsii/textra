@@ -59,20 +59,7 @@ func Extract(src any) Struct {
 	return result
 }
 
-// RemoveEmpty returns a map without fields that has no tags.
-func (s Struct) RemoveEmpty(tag string) Struct {
-	filtered := make(Struct, 0)
-
-	for _, field := range s {
-		if len(field.Tags) != 0 {
-			filtered = append(filtered, field)
-		}
-	}
-
-	return filtered
-}
-
-// ByTagName returns a slice of fields which contains a given tag.
+// ByTagName returns a slice of fields which contain given tag.
 func (s Struct) ByTagName(tag string) Struct {
 	filtered := make(Struct, 0)
 
@@ -88,8 +75,8 @@ func (s Struct) ByTagName(tag string) Struct {
 	return filtered
 }
 
-// ByTagNames returns a slice of fields if any of the tags is present in tag string.
-func (s Struct) ByTagNames(tags ...string) Struct {
+// ByAnyTagName returns a slice of fields which contain at least one tag of the given tags.
+func (s Struct) ByAnyTagName(tags ...string) Struct {
 	filtered := make(Struct, 0)
 
 	for _, field := range s {
@@ -104,6 +91,40 @@ func (s Struct) ByTagNames(tags ...string) Struct {
 	return filtered
 }
 
+// ByTagNames returns a slice of fields which contain at all of the given tags.
+func (s Struct) ByTagNames(tags ...string) Struct {
+	filtered := make(Struct, 0)
+
+	shouldMatch := len(tags)
+
+	for _, field := range s {
+		matched := 0
+
+		for _, t := range field.Tags {
+			if slices.Contains(tags, t.Tag) {
+				matched++
+			}
+		}
+
+		if matched == shouldMatch {
+			filtered = append(filtered, field)
+		}
+	}
+
+	return filtered
+}
+
+// Field returns a field by name.
+func (s Struct) Field(name string) (Field, bool) {
+	for _, field := range s {
+		if field.Name == name {
+			return field, true
+		}
+	}
+
+	return Field{}, false
+}
+
 // FilterFunc returns a slice of fields, filtered by fn(field) == true.
 func (s Struct) FilterFunc(fn func(Field) bool) Struct {
 	filtered := make(Struct, 0)
@@ -111,6 +132,19 @@ func (s Struct) FilterFunc(fn func(Field) bool) Struct {
 	for _, f := range s {
 		if fn(f) {
 			filtered = append(filtered, f)
+		}
+	}
+
+	return filtered
+}
+
+// RemoveEmpty returns a map without fields that has no tags.
+func (s Struct) RemoveEmpty(tag string) Struct {
+	filtered := make(Struct, 0)
+
+	for _, field := range s {
+		if len(field.Tags) != 0 {
+			filtered = append(filtered, field)
 		}
 	}
 

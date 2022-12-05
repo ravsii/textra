@@ -1,58 +1,86 @@
 package textra_test
 
-// import (
-// 	"reflect"
-// 	"testing"
+import (
+	"reflect"
+	"testing"
 
-// 	"github.com/ravsii/textra"
-// )
+	"github.com/ravsii/textra"
+)
 
-// type Empty struct{}
+func TestExtract(t *testing.T) {
+	type Empty struct{}
 
-// type Populated struct {
-// 	NoTag    Empty
-// 	OneTag   Empty `test:"notag"`
-// 	TwoTag   Empty `pg:"pgvalue"   json:"two_tag,omitempty" test:"two_tag,opt1,opt2"`
-// 	ThreeTag Empty `pg:"three_tag" json:"three_tag"`
-// }
+	type TesterFilled struct {
+		Tag1 struct{} `json:"tag1"`
+		Tag2 struct{} `json:"tag2" sql:"tag2, pk"`
+	}
 
-// func TestExtract(t *testing.T) {
-// 	expected := textra.StructTags{
-// 		"OneTag": []textra.Tag{{Tag: "test", Value: "notag"}},
-// 		"TwoTag": []textra.Tag{
-// 			{"pg", "pgvalue", nil},
-// 			{"json", "two_tag", []string{"omitempty"}},
-// 			{"test", "two_tag", []string{"opt1", "opt2"}},
-// 		},
-// 		"ThreeTag": []textra.Tag{
-// 			{"pg", "three_tag", nil},
-// 			{"json", "three_tag", nil},
-// 		},
-// 	}
+	expectedFilled := textra.Struct{
+		textra.Field{
+			Name: "Tag1",
+			Tags: textra.Tags{
+				{"json", "tag1", nil},
+			},
+		},
+		textra.Field{
+			Name: "Tag2",
+			Tags: textra.Tags{
+				{"json", "tag2", nil},
+				{"sql", "tag2", []string{"pk"}},
+			},
+		},
+	}
 
-// 	testCases := []struct {
-// 		name string
-// 		str  any
-// 		want textra.StructTags
-// 	}{
-// 		{"Empty, non-pointer", Empty{}, nil},
-// 		{"Empty, pointer", &Empty{}, nil},
-// 		{"Empty, nil-check", (*Empty)(nil), nil},
-// 		{"Populated, non-pointer", Populated{}, expected},
-// 		{"Populated, pointer", &Populated{}, expected},
-// 		{"Populated, nil-check", (*Populated)(nil), expected},
-// 	}
+	testCases := []struct {
+		name  string
+		input any
+		want  textra.Struct
+	}{
+		{"Empty, non-pointer", Empty{}, nil},
+		{"Empty, pointer", &Empty{}, nil},
+		{"Empty, nil-check", (*Empty)(nil), nil},
+		{"Populated, non-pointer", TesterFilled{}, expectedFilled},
+		{"Populated, pointer", &TesterFilled{}, expectedFilled},
+		{"Populated, nil-check", (*TesterFilled)(nil), expectedFilled},
+	}
 
-// 	for _, testCase := range testCases {
-// 		testCase := testCase
+	for _, testCase := range testCases {
+		testCase := testCase
 
-// 		got := textra.Extract(testCase.str)
+		got := textra.Extract(testCase.input)
 
-// 		if !reflect.DeepEqual(got, testCase.want) && (len(got) != 0 && len(testCase.want) != 0) {
-// 			t.Errorf("%s: got %v want %v", testCase.name, got, testCase.want)
-// 		}
-// 	}
-// }
+		// nil / empty checks
+		if len(got) == len(testCase.want) && reflect.DeepEqual(got, textra.Struct{}) {
+			continue
+		}
+
+		if !reflect.DeepEqual(got, testCase.want) {
+			t.Errorf("%s: got %v want %v", testCase.name, got, testCase.want)
+		}
+	}
+}
+
+func TestExtractNonSlice(t *testing.T) {
+	boolptr := true
+	testCases := []interface{}{
+		4,
+		uintptr(1),
+		"",
+		"test",
+		true,
+		false,
+		&boolptr,
+	}
+
+	for _, testCase := range testCases {
+		got := textra.Extract(testCase)
+
+		// nil / empty checks
+		if got != nil {
+			t.Errorf("%T: result should be nil", testCase)
+		}
+	}
+}
 
 // func TestFilter(t *testing.T) {
 // 	testCases := []struct {
