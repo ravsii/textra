@@ -1,6 +1,6 @@
 # Textra
 
-Textra is a simple and fast **\***t**\***ags **\***extra**\***ctor package that helps to work with structs tags.
+Textra is a simple and fast tag extractor package that helps to work with structs tags.
 
 Textra parses struct tags and returns them as a slice. It also does provide extra functionality like filtering.
 
@@ -47,8 +47,8 @@ Basic: 		 map[SqlOnly:[sql:sql_only] WithTag:[json:with_tag,omitempty] WithTags:
 
 ## Improvements
 
+- [ ] **Better README.md**
 - [x] Add blacklisting (RemoveFields)
-- [x] Better README.md
 - [ ] Examples for go.dev
 - [x] Some sugar for common tags
   - [x] ByName to get tag for each field
