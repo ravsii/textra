@@ -3,6 +3,7 @@ package textra_test
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/ravsii/textra"
 )
@@ -114,6 +115,8 @@ func TestExtractFieldType(t *testing.T) {
 		{"*[]*string", struct{ a *[]*string }{}, "a", "*[]*string"},
 		{"struct", struct{ a struct{} }{}, "a", "struct"},
 		{"*struct {}", struct{ a *struct{} }{}, "a", "*struct {}"},
+		{"time.Time", struct{ a time.Time }{}, "a", "time.Time"},
+		{"*time.Time", struct{ a *time.Time }{}, "a", "*time.Time"},
 	}
 
 	for _, testCase := range testCases {

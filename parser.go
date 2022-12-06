@@ -48,5 +48,13 @@ func parseType(typ reflect.Type) string {
 		return "*" + typ.Elem().String()
 	}
 
+	if typ.Kind() == reflect.Struct {
+		if len(typ.PkgPath()) > 0 {
+			return typ.PkgPath() + "." + typ.Name()
+		}
+
+		return typ.Kind().String()
+	}
+
 	return typ.Kind().String()
 }
