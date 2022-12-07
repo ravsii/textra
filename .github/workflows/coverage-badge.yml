@@ -1,2 +1,10 @@
-- name: Go Coverage Badge
-  uses: tj-actions/coverage-badge-go@v2.1
+name: Coverage Badge test
+on: [push]
+jobs:
+  badge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Go test coverage
+        uses: tj-actions/coverage-badge-go@v2.1
+
+
