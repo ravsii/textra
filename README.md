@@ -6,7 +6,7 @@ Textra parses struct tags and returns them as a slice. It also does provide extr
 
 Gathering json tags to feed it some other service is probably the most common usecase of this.
 
-_Initially I built it for another private project, but decided to try open-source it, since it could be useful in some use-cases_
+_Initially I built it for another private project, but decided to try to open-source it, since it could be useful in some use-cases_
 
 ## Badges
 
