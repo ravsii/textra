@@ -1,14 +1,10 @@
 # Textra
 
-Textra is a simple and fast tag extractor package that helps to work with structs tags.
+Textra is a simple and fast tag extractor package that helps to work with structs tags. It also has json tags for all structs, in case of JSON output.
 
-Textra parses struct tags and returns them as a slice. It also does provide extra functionality like filtering.
+_Initially I built it for another private project, but decided to try to open-source it, since it could be useful in some use-cases. Because of that it has some features that feels redundant, like having field type as a part of returned data_
 
-Gathering json tags to feed it some other service is probably the most common usecase of this.
-
-_Initially I built it for another private project, but decided to try to open-source it, since it could be useful in some use-cases_
-
-## Badges
+## Documentation
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/Ravcii/textra.svg)](https://pkg.go.dev/github.com/Ravcii/textra)
 
