@@ -1,6 +1,8 @@
 package textra
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Field represents a one struct field.
 type Field struct {

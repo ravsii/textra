@@ -23,14 +23,6 @@ go get github.com/Ravcii/textra
 Basic usage:
 
 ```go
-package main
-
-import (
-	"fmt"
-
-	"github.com/Ravcii/textra"
-)
-
 type Tester struct {
 	NoTags   bool
 	WithTag  string `json:"with_tag,omitempty"`
@@ -39,19 +31,90 @@ type Tester struct {
 }
 
 func main() {
-	tags := textra.Extract((*Tester)(nil))
-	fmt.Println("Basic: ", tags)
+	fields := textra.Extract((*Tester)(nil))
+	for _, field := range fields {
+		fmt.Println(field)
+	}
 }
 
 ```
 
 ```
-Basic: 		 map[SqlOnly:[sql:sql_only] WithTag:[json:with_tag,omitempty] WithTags:[json:with_tags sql:with_tag]]
+NoTags(bool):[]
+WithTag(string):[json:"with_tag,omitempty"]
+WithTags(string):[json:"with_tags" sql:"with_tag"]
+SqlOnly(string):[sql:"sql_only"]
 ```
 
-## Improvements
+You can look at return types at [go.doc](https://pkg.go.dev/github.com/Ravcii/textra), basically it returns a slice of fields with its types (as strings) and a slice of Tags for each field.
 
-- [ ] **Better README.md**
+Now let's apply some functions:
+
+```go
+fields := textra.Extract((*Tester)(nil)).RemoveEmpty()
+```
+
+```
+WithTag(string):[json:"with_tag,omitempty"]
+WithTags(string):[json:"with_tags" sql:"with_tag"]
+SqlOnly(string):[sql:"sql_only"]
+```
+
+What if we care only about SQL tags?
+
+```go
+fields := textra.Extract((*Tester)(nil)).RemoveEmpty().Only("sql")
+```
+
+```
+{WithTags string sql:"with_tag"}
+{SqlOnly string sql:"sql_only"}
+```
+
+_Only() is a bit special as it returns a Field of a different type, with `Tag` rather than `Tags`_
+
+Although it may be redundant, it also parses types a their string representation (for easier comparsion or output, if you need it)
+
+```go
+type Types struct {
+	intType         int
+	byteType        byte
+	runeType        rune
+	stringType      string
+	booleanType     bool
+	sliceStringType []string
+	mapType         map[string]string
+	chanType        chan int
+	funcType        func() error
+	importType      time.Time
+	pointerType     *string
+}
+
+func main() {
+	fields := textra.Extract((*Types)(nil))
+	for _, field := range fields {
+		fmt.Println(field.Name, field.Type)
+	}
+}
+```
+
+```
+intType int
+byteType uint8
+runeType int32
+stringType string
+booleanType bool
+sliceStringType slice
+mapType map
+chanType chan
+funcType func
+importType time.Time
+pointerType *string
+```
+
+### TODO
+
+- [x] **Better README.md** _(i hope)_
 - [x] Add blacklisting (RemoveFields)
 - [ ] Examples for go.dev
 - [x] Some sugar for common tags
@@ -59,3 +122,4 @@ Basic: 		 map[SqlOnly:[sql:sql_only] WithTag:[json:with_tag,omitempty] WithTags:
   - [x] Omitempty for "\*,omitempty"
   - [x] Ignored for "-"
 - [x] Better string representation
+- [ ] ...?
