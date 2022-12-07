@@ -8,7 +8,11 @@ Gathering json tags to feed it some other service is probably the most common us
 
 _Initially I built it for another private project, but decided to try open-source it, since it could be useful in some use-cases_
 
-## Go Get
+## Badges
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/Ravcii/textra.svg)](https://pkg.go.dev/github.com/Ravcii/textra)
+
+## Installation
 
 ```shell
 go get github.com/Ravcii/textra
