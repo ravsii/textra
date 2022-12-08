@@ -1,17 +1,15 @@
 # Textra
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/ravsii/textra.svg)](https://pkg.go.dev/github.com/ravsii/textra)
+
 Textra is a simple and fast struct tags parser library. It also has json tags for all structs, in case of JSON output.
 
-_Initially I built it for another private project, but decided to try to open-source it, since it could be useful in some use-cases. Because of that it has some features that feels redundant, like having field type as a part of returned data_
-
-## Documentation
-
-[![Go Reference](https://pkg.go.dev/badge/github.com/Ravcii/textra.svg)](https://pkg.go.dev/github.com/Ravcii/textra)
+_Initially I built it for another private project, but decided to try to open-source it, since it could be useful for someone. Because of that it has some features that feels redundant, like having field type as a part of returned data_
 
 ## Installation
 
 ```shell
-go get github.com/Ravcii/textra
+go get github.com/ravsii/textra
 ```
 
 ## Examples
