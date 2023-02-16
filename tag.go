@@ -20,12 +20,28 @@ func (t Tags) ByName(name string) (Tag, bool) {
 	return Tag{}, false
 }
 
+func (t Tags) String() string {
+	tags := make([]string, 0, len(t))
+
+	for _, tag := range t {
+		tags = append(tags, tag.String())
+	}
+
+	return "[" + strings.Join(tags, " ") + "]"
+}
+
 // Tag represents a single struct tag, like
 //
-//	json:"value".
+//	`json:"value"`.
 type Tag struct {
-	Tag      string   `json:"tag"`
-	Value    string   `json:"value"`
+	// Tag holds tag's name.
+	Tag   string `json:"tag"`
+	Value string `json:"value"`
+	// Optional holds the rest of the value which comes after the comma.
+	// Example: In a tag like
+	// 	`json:"id,pk,omitempty"`
+	// Optional will contain
+	// 	["pk", "omitempty"]
 	Optional []string `json:"optional,omitempty"`
 }
 
@@ -50,14 +66,4 @@ func (t Tag) String() string {
 	b.WriteRune('"')
 
 	return b.String()
-}
-
-func (t Tags) String() string {
-	tags := make([]string, 0, len(t))
-
-	for _, tag := range t {
-		tags = append(tags, tag.String())
-	}
-
-	return "[" + strings.Join(tags, " ") + "]"
 }

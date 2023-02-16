@@ -7,7 +7,7 @@ import (
 // Field represents a one struct field.
 type Field struct {
 	Name string `json:"name"`
-	// Type is stringified type, like "time.Time" or "*string"
+	// Type is a stringified type of the field, like "time.Time" or "*string"
 	Type string `json:"type"`
 	Tags Tags   `json:"tags"`
 }
@@ -16,6 +16,7 @@ type Field struct {
 // It's used as output of some functions (like Only()).
 type FieldTag struct {
 	Name string `json:"name"`
+	// Type is a stringified type of the field, like "time.Time" or "*string"
 	Type string `json:"type"`
 	Tag  Tag    `json:"tag"`
 }
