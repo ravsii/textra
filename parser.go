@@ -44,14 +44,43 @@ func parseType(typ reflect.Type) string {
 	switch typ.Kind() {
 	case reflect.Ptr:
 		return "*" + typ.Elem().String()
-
+	case reflect.Slice:
+		return "[]" + typ.Elem().String()
 	case reflect.Struct:
 		if len(typ.PkgPath()) > 0 {
 			return typ.PkgPath() + "." + typ.Name()
 		}
 
 		return typ.Kind().String()
-	}
+	case reflect.Map:
+		return "map[" + typ.Key().String() + "]" + typ.Elem().String()
+	case reflect.Func:
+		var args, results string
 
-	return typ.Kind().String()
+		for i := 0; i < typ.NumIn(); i++ {
+			args += parseType(typ.In(i))
+
+			if i != typ.NumIn()-1 {
+				args += ", "
+			}
+		}
+
+		for i := 0; i < typ.NumOut(); i++ {
+			results += parseType(typ.Out(i))
+
+			if i != typ.NumOut()-1 {
+				results += ", "
+			}
+		}
+
+		return "func(" + args + ") " + results
+	case reflect.Interface:
+		if _, ok := reflect.New(typ).Interface().(*error); ok {
+			return "error"
+		}
+
+		fallthrough
+	default:
+		return typ.Kind().String()
+	}
 }
