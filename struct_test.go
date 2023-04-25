@@ -256,7 +256,7 @@ func TestRemoveEmpty(t *testing.T) {
 
 	testCases := []struct {
 		name string
-		str  any
+		str  interface{}
 		want textra.Struct
 	}{
 		{"with empty", TesterWithEmpty{}, textra.Struct{

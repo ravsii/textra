@@ -36,7 +36,7 @@ func TestExtract(t *testing.T) {
 
 	testCases := []struct {
 		name  string
-		input any
+		input interface{}
 		want  textra.Struct
 	}{
 		{"Empty, non-pointer", Empty{}, nil},
@@ -88,7 +88,7 @@ func TestExtractNonSlice(t *testing.T) {
 func TestExtractFieldType(t *testing.T) {
 	testCases := []struct {
 		name     string
-		str      any
+		str      interface{}
 		field    string
 		wantType string
 	}{

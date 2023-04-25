@@ -2,8 +2,6 @@ package textra
 
 import (
 	"strings"
-
-	"golang.org/x/exp/slices"
 )
 
 // Struct represents a single struct.
@@ -28,10 +26,11 @@ func (s Struct) ByTagName(tag string) Struct {
 // ByAnyTagName returns a slice of fields which contain at least one tag of the given tags.
 func (s Struct) ByAnyTagName(tags ...string) Struct {
 	filtered := make(Struct, 0)
+	tagsUnique := toUniqueMap(tags...)
 
 	for _, field := range s {
 		for _, t := range field.Tags {
-			if slices.Contains(tags, t.Tag) {
+			if _, ok := tagsUnique[t.Tag]; ok {
 				filtered = append(filtered, field)
 				break
 			}
@@ -44,14 +43,14 @@ func (s Struct) ByAnyTagName(tags ...string) Struct {
 // ByTagNames returns a slice of fields which contain all of the given tags.
 func (s Struct) ByTagNames(tags ...string) Struct {
 	filtered := make(Struct, 0)
-
+	tagsUnique := toUniqueMap(tags...)
 	shouldMatch := len(tags)
 
 	for _, field := range s {
 		matched := 0
 
 		for _, t := range field.Tags {
-			if slices.Contains(tags, t.Tag) {
+			if _, ok := tagsUnique[t.Tag]; ok {
 				matched++
 			}
 		}
@@ -104,9 +103,10 @@ func (s Struct) RemoveEmpty() Struct {
 // RemoveFields copies original map but skips given fields on each field.
 func (s Struct) RemoveFields(fields ...string) Struct {
 	filtered := make(Struct, 0)
+	fieldsUnique := toUniqueMap(fields...)
 
 	for _, field := range s {
-		if !slices.Contains(fields, field.Name) {
+		if _, ok := fieldsUnique[field.Name]; !ok {
 			filtered = append(filtered, field)
 		}
 	}

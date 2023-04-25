@@ -1,6 +1,6 @@
 # Textra
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/ravsii/textra.svg)](https://pkg.go.dev/github.com/ravsii/textra)
+[![Go Reference](https://pkg.go.dev/badge/github.com/ravsii/textra.svg)](https://pkg.go.dev/github.com/ravsii/textra) [![codecov](https://codecov.io/gh/ravsii/textra/branch/main/graph/badge.svg?token=C8WA38GNFV)](https://codecov.io/gh/ravsii/textra)
 
 Textra is a simple and fast struct tags parser library. It also has json tags for all structs, in case of JSON output.
 
@@ -18,22 +18,22 @@ Basic usage:
 
 ```go
 type Tester struct {
-	NoTags   bool
-	WithTag  string `json:"with_tag,omitempty"`
-	WithTags string `json:"with_tags"          sql:"with_tag"`
-	SqlOnly  string `sql:"sql_only"`
+ NoTags   bool
+ WithTag  string `json:"with_tag,omitempty"`
+ WithTags string `json:"with_tags"          sql:"with_tag"`
+ SqlOnly  string `sql:"sql_only"`
 }
 
 func main() {
-	fields := textra.Extract((*Tester)(nil))
-	for _, field := range fields {
-		fmt.Println(field)
-	}
+ fields := textra.Extract((*Tester)(nil))
+ for _, field := range fields {
+  fmt.Println(field)
+ }
 }
 
 ```
 
-```
+```text
 NoTags(bool):[]
 WithTag(string):[json:"with_tag,omitempty"]
 WithTags(string):[json:"with_tags" sql:"with_tag"]
@@ -48,7 +48,7 @@ Now let's apply some functions:
 fields := textra.Extract((*Tester)(nil)).RemoveEmpty()
 ```
 
-```
+```text
 WithTag(string):[json:"with_tag,omitempty"]
 WithTags(string):[json:"with_tags" sql:"with_tag"]
 SqlOnly(string):[sql:"sql_only"]
@@ -60,7 +60,7 @@ What if we care only about SQL tags?
 fields := textra.Extract((*Tester)(nil)).RemoveEmpty().Only("sql")
 ```
 
-```
+```text
 {WithTags string sql:"with_tag"}
 {SqlOnly string sql:"sql_only"}
 ```
@@ -71,28 +71,28 @@ Although it may be redundant, it also parses types a their string representation
 
 ```go
 type Types struct {
-	intType         int
-	byteType        byte
-	runeType        rune
-	stringType      string
-	booleanType     bool
-	sliceStringType []string
-	mapType         map[string]string
-	chanType        chan int
-	funcType        func() error
-	importType      time.Time
-	pointerType     *string
+ intType         int
+ byteType        byte
+ runeType        rune
+ stringType      string
+ booleanType     bool
+ sliceStringType []string
+ mapType         map[string]string
+ chanType        chan int
+ funcType        func() error
+ importType      time.Time
+ pointerType     *string
 }
 
 func main() {
-	fields := textra.Extract((*Types)(nil))
-	for _, field := range fields {
-		fmt.Println(field.Name, field.Type)
-	}
+ fields := textra.Extract((*Types)(nil))
+ for _, field := range fields {
+  fmt.Println(field.Name, field.Type)
+ }
 }
 ```
 
-```
+```text
 intType int
 byteType uint8
 runeType int32
