@@ -25,10 +25,10 @@ linters:
     - ifshort
     - interfacer
     - maligned
+    - nlreturn
     - nosnakecase
     - scopelint
     - structcheck
     - varcheck
     - varnamelen
-    - nlreturn
     - wsl
