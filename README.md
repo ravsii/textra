@@ -4,7 +4,7 @@
 
 Textra is a simple and fast struct tags parser library. It also has json tags for all structs, in case of JSON output.
 
-_Initially I built it for another private project, but decided to try to open-source it, since it could be useful for someone. Because of that it has some features that feels redundant, like having field type as a part of returned data_
+Initially I built it for another private project, but decided to try to open-source it, since it could be useful for someone. Because of that it has some features that feels redundant, like having field type as a part of returned data
 
 ## Installation
 
