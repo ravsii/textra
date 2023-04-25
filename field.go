@@ -4,19 +4,19 @@ import (
 	"fmt"
 )
 
-// Field represents a one struct field.
+// Field represents one struct field.
 type Field struct {
 	Name string `json:"name"`
-	// Type is a stringified type of the field, like "time.Time" or "*string"
+	// Type is a type of a field, like "time.Time" or "*string"
 	Type string `json:"type"`
 	Tags Tags   `json:"tags"`
 }
 
-// FieldTag is like but it has only one tag.
-// It's used as output of some functions (like Only()).
+// FieldTag is like Field but it has only one tag.
+// It's used as an output of some functions (like Only()).
 type FieldTag struct {
 	Name string `json:"name"`
-	// Type is a stringified type of the field, like "time.Time" or "*string"
+	// Type is a type of a field, like "time.Time" or "*string"
 	Type string `json:"type"`
 	Tag  Tag    `json:"tag"`
 }

@@ -4,8 +4,9 @@ import (
 	"reflect"
 )
 
-// Extract accept a struct (or a pointer to a struct) and returns a map of fields and their tags.
-// if src is not a struct or a pointer to a struct, nil is returned.
+// Extract accept a struct (or a pointer to a struct) and returns a map
+// of fields and their tags.
+// If src is not a struct or a pointer to a struct, nil is returned.
 func Extract(src interface{}) Struct {
 	typ := reflect.TypeOf(src)
 

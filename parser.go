@@ -20,15 +20,13 @@ func parseTags(tag reflect.StructTag) Tags {
 }
 
 func parseTag(tagStr string) Tag {
-	splitted := strings.Split(tagStr, ":")
-
-	// Removing quotes, "value,  optional" -> value,  optional
-	v := splitted[1][1 : len(splitted[1])-1]
+	split := strings.Split(tagStr, ":")
+	v := strings.Trim(split[1], "\"")
 	vs := strings.Split(v, ",")
 	value := strings.TrimSpace(vs[0])
 
 	tag := Tag{
-		Tag:   splitted[0],
+		Tag:   split[0],
 		Value: value,
 	}
 
@@ -43,11 +41,11 @@ func parseTag(tagStr string) Tag {
 }
 
 func parseType(typ reflect.Type) string {
-	if typ.Kind() == reflect.Ptr {
+	switch typ.Kind() {
+	case reflect.Ptr:
 		return "*" + typ.Elem().String()
-	}
 
-	if typ.Kind() == reflect.Struct {
+	case reflect.Struct:
 		if len(typ.PkgPath()) > 0 {
 			return typ.PkgPath() + "." + typ.Name()
 		}

@@ -128,7 +128,7 @@ func TestByAnyTagName(t *testing.T) {
 	for _, testCase := range testCases {
 		testCase := testCase
 
-		got := data.ByAnyTagName(testCase.tagNames...)
+		got := data.ByTagNameAny(testCase.tagNames...)
 
 		// nil / empty checks
 		if len(got) == len(testCase.want) && reflect.DeepEqual(got, textra.Struct{}) {
@@ -180,7 +180,7 @@ func TestByTagNames(t *testing.T) {
 	for _, testCase := range testCases {
 		testCase := testCase
 
-		got := data.ByTagNames(testCase.tagNames...)
+		got := data.ByTagNameAll(testCase.tagNames...)
 
 		// nil / empty checks
 		if len(got) == len(testCase.want) && reflect.DeepEqual(got, textra.Struct{}) {
