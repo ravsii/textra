@@ -2,8 +2,6 @@ package textra
 
 import (
 	"strings"
-
-	"golang.org/x/exp/slices"
 )
 
 // Tags is a slice of tags.
@@ -47,7 +45,9 @@ type Tag struct {
 
 // OmitEmpty returns true if t.Optional contains "omitempty".
 func (t Tag) OmitEmpty() bool {
-	return slices.Contains(t.Optional, "omitempty")
+	m := toUniqueMap(t.Optional...)
+	_, ok := m["omitempty"]
+	return ok
 }
 
 // Ignored is a shortcut for t.Value == "-".
