@@ -24,7 +24,6 @@ func parseTag(tagStr string) Tag {
 
 	// Removing quotes, "value,  optional" -> value,  optional
 	v := splitted[1][1 : len(splitted[1])-1]
-
 	vs := strings.Split(v, ",")
 	value := strings.TrimSpace(vs[0])
 
