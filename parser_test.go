@@ -84,6 +84,11 @@ func TestParseType(t *testing.T) {
 			want: "func()",
 		},
 		{
+			name: "Comples func type",
+			typ:  reflect.TypeOf(func(int, map[*string]map[*bool]*reflect.Type, string) (*bool, error) { return nil, nil }),
+			want: "func(int, map[*string]map[*bool]*reflect.Type, string) *bool, error",
+		},
+		{
 			name: "Interface type",
 			typ:  reflect.TypeOf((*interface{})(nil)),
 			want: "interface",
