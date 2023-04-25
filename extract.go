@@ -10,7 +10,7 @@ func Extract(src interface{}) Struct {
 	typ := reflect.TypeOf(src)
 
 	// If str is a struct pointer
-	if typ.Kind() == reflect.Pointer {
+	if typ.Kind() == reflect.Ptr {
 		typ = typ.Elem() // dereference it
 	}
 
