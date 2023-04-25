@@ -20,7 +20,6 @@ func (t Tags) ByName(name string) (Tag, bool) {
 
 func (t Tags) String() string {
 	tags := make([]string, 0, len(t))
-
 	for _, tag := range t {
 		tags = append(tags, tag.String())
 	}
@@ -56,14 +55,10 @@ func (t Tag) Ignored() bool {
 }
 
 func (t Tag) String() string {
-	b := strings.Builder{}
-	b.WriteString(t.Tag + ":\"" + t.Value)
-
+	s := t.Tag + `:"` + t.Value
 	for _, v := range t.Optional {
-		b.WriteString("," + v)
+		s += "," + v
 	}
-
-	b.WriteRune('"')
-
-	return b.String()
+	s += `"`
+	return s
 }

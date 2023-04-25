@@ -2,7 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/ravsii/textra.svg)](https://pkg.go.dev/github.com/ravsii/textra) [![codecov](https://codecov.io/gh/ravsii/textra/branch/main/graph/badge.svg?token=C8WA38GNFV)](https://codecov.io/gh/ravsii/textra)
 
-Textra is a simple and fast struct tags parser library. It also has json tags for all structs, in case of JSON output.
+Textra is a zero-dependency, simple and fast struct tags parser library. It also has json tags for all structs, in case of JSON output.
 
 Initially I built it for another private project, but decided to try to open source it, since it could be useful for someone. Because of that, it has some features that feel redundant, like having field type as a part of returned data
 
