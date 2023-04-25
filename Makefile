@@ -1,3 +1,7 @@
+test:
+	go test ./... --race -count 1
+cover:
+	go test ./... -cover
 lint:
 	golangci-lint run ./... -c ./.golangci.yml -v --issues-exit-code=0 --out-format colored-line-number
 lint-docker:
