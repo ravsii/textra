@@ -7,7 +7,7 @@ run:
   tests: false
   modules-download-mode: readonly
   allow-parallel-runners: true
-  go: '1.11'
+  go: '1.20'
 
 output:
   # Sort results by: filepath, line and column.
