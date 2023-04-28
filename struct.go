@@ -86,14 +86,15 @@ func (s Struct) FilterFunc(fn func(Field) bool) Struct {
 
 // RemoveEmpty removes any field from a Struct that has an empty "Tags" field.
 func (s Struct) RemoveEmpty() Struct {
-	filtered := make(Struct, 0)
-	for _, field := range s {
-		if len(field.Tags) != 0 {
-			filtered = append(filtered, field)
+	removed := 0
+	for i, field := range s {
+		if len(field.Tags) == 0 {
+			s[i] = s[len(s)-removed-1]
+			removed++
 		}
 	}
 
-	return filtered
+	return s[:len(s)-removed]
 }
 
 // Remove removes fields by their name from a Struct and returns a new Struct.

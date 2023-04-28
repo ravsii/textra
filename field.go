@@ -22,7 +22,7 @@ type FieldTag struct {
 }
 
 func (f Field) String() string {
-	return fmt.Sprintf("%s(%s):%s", f.Name, f.Type, f.Tags)
+	return fmt.Sprintf("%s(%s):%s", f.Name, f.Type, f.Tags.String())
 }
 
 func (f FieldTag) String() string {
