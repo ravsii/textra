@@ -1,9 +1,5 @@
 package textra
 
-import (
-	"strings"
-)
-
 // Struct represents a single struct.
 type Struct []Field
 
@@ -129,9 +125,9 @@ func (s Struct) OnlyTag(name string) []FieldTag {
 }
 
 func (s Struct) String() string {
-	b := strings.Builder{}
+	var str string
 	for _, field := range s {
-		b.WriteString(field.String())
+		str += field.String()
 	}
-	return b.String()
+	return str
 }
