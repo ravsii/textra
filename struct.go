@@ -93,8 +93,8 @@ func (s Struct) RemoveEmpty() Struct {
 	return s[:len(s)-removed]
 }
 
-// Remove removes fields by their name from a Struct and returns a new Struct.
-func (s Struct) Remove(fields ...string) Struct {
+// RemoveFields removes fields by their names from a Struct and returns a new Struct.
+func (s Struct) RemoveFields(fields ...string) Struct {
 	filtered := make(Struct, 0)
 	fieldsUnique := toUniqueMap(fields...)
 	for _, field := range s {
