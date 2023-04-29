@@ -7,21 +7,11 @@ import (
 	"github.com/ravsii/textra"
 )
 
-// Here's a list of test structs you can you for testing.
-type (
-	TestEmpty struct{}
-	TestOne   struct {
+func TestGetField(t *testing.T) {
+	type TestOne struct {
 		Tag struct{} `json:"tag"`
 	}
-	TestMultiple struct {
-		Tag1 struct{} `json:"tag1"`
-		Tag2 struct{} `json:"tag2" pg:"tag2" sql:"tag2, pk"`
-		Tag3 struct{} `json:"tag3" sql:"tag3, pk"`
-		Tag4 struct{} `json:"tag4" gorm:",pk" sql:"tag4, pk"`
-	}
-)
 
-func TestGetField(t *testing.T) {
 	data := textra.Extract((*TestOne)(nil))
 	if _, ok := data.Field("Tag"); !ok {
 		t.Errorf("Field() =  %t, want: found", ok)
@@ -32,6 +22,13 @@ func TestGetField(t *testing.T) {
 }
 
 func TestByTagName(t *testing.T) {
+	type TestMultiple struct {
+		Tag1 struct{} `json:"tag1"`
+		Tag2 struct{} `json:"tag2" pg:"tag2" sql:"tag2, pk"`
+		Tag3 struct{} `json:"tag3" sql:"tag3, pk"`
+		Tag4 struct{} `json:"tag4" gorm:",pk" sql:"tag4, pk"`
+	}
+
 	tests := []struct {
 		tagName string
 		want    textra.Struct
@@ -93,6 +90,13 @@ func TestByTagName(t *testing.T) {
 }
 
 func TestByTagNameAny(t *testing.T) {
+	type TestMultiple struct {
+		Tag1 struct{} `json:"tag1"`
+		Tag2 struct{} `json:"tag2" pg:"tag2" sql:"tag2, pk"`
+		Tag3 struct{} `json:"tag3" sql:"tag3, pk"`
+		Tag4 struct{} `json:"tag4" gorm:",pk" sql:"tag4, pk"`
+	}
+
 	tests := []struct {
 		name     string
 		tagNames []string
@@ -164,6 +168,13 @@ func TestByTagNameAny(t *testing.T) {
 }
 
 func TestByTagNameAll(t *testing.T) {
+	type TestMultiple struct {
+		Tag1 struct{} `json:"tag1"`
+		Tag2 struct{} `json:"tag2" pg:"tag2" sql:"tag2, pk"`
+		Tag3 struct{} `json:"tag3" sql:"tag3, pk"`
+		Tag4 struct{} `json:"tag4" gorm:",pk" sql:"tag4, pk"`
+	}
+
 	tests := []struct {
 		name     string
 		tagNames []string
@@ -385,6 +396,13 @@ func TestOnlyTag(t *testing.T) {
 }
 
 func TestRemoveFields(t *testing.T) {
+	type TestMultiple struct {
+		Tag1 struct{} `json:"tag1"`
+		Tag2 struct{} `json:"tag2" pg:"tag2" sql:"tag2, pk"`
+		Tag3 struct{} `json:"tag3" sql:"tag3, pk"`
+		Tag4 struct{} `json:"tag4" gorm:",pk" sql:"tag4, pk"`
+	}
+
 	tests := []struct {
 		name   string
 		fields []string
@@ -485,6 +503,19 @@ func TestRemoveFields(t *testing.T) {
 }
 
 func TestString(t *testing.T) {
+	type (
+		TestEmpty struct{}
+		TestOne   struct {
+			Tag struct{} `json:"tag"`
+		}
+		TestMultiple struct {
+			Tag1 struct{} `json:"tag1"`
+			Tag2 struct{} `json:"tag2" pg:"tag2" sql:"tag2, pk"`
+			Tag3 struct{} `json:"tag3" sql:"tag3, pk"`
+			Tag4 struct{} `json:"tag4" gorm:",pk" sql:"tag4, pk"`
+		}
+	)
+
 	tests := []struct {
 		name string
 		str  interface{}
