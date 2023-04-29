@@ -275,8 +275,13 @@ func TestRemoveEmpty(t *testing.T) {
 	}
 
 	type TesterWithEmpty struct {
-		Empty struct{}
-		Tag1  struct{} `json:"tag1"`
+		Empty  struct{}
+		Empty2 struct{}
+		Empty3 struct{}
+		Tag1   struct{} `json:"tag1"`
+		Empty4 struct{}
+		Empty5 struct{}
+		Tag2   struct{} `json:"tag2"`
 	}
 
 	tests := []struct {
@@ -284,17 +289,24 @@ func TestRemoveEmpty(t *testing.T) {
 		str  interface{}
 		want textra.Struct
 	}{
-		{"with empty", TesterWithEmpty{}, textra.Struct{
-			textra.Field{
+		{"with empty", (*TesterWithEmpty)(nil), textra.Struct{
+			{
 				Name: "Tag1",
 				Type: "struct",
 				Tags: textra.Tags{
 					{"json", "tag1", nil},
 				},
 			},
+			{
+				Name: "Tag2",
+				Type: "struct",
+				Tags: textra.Tags{
+					{"json", "tag2", nil},
+				},
+			},
 		}},
-		{"without empty", Tester{}, textra.Struct{
-			textra.Field{
+		{"without empty", (*Tester)(nil), textra.Struct{
+			{
 				Name: "Tag1",
 				Type: "struct",
 				Tags: textra.Tags{
@@ -475,6 +487,25 @@ func TestRemoveFields(t *testing.T) {
 				},
 			},
 		},
+		{"tag2 tag4", []string{"Tag2", "Tag4"},
+			textra.Struct{
+				{
+					Name: "Tag1",
+					Type: "struct",
+					Tags: textra.Tags{
+						{"json", "tag1", nil},
+					},
+				},
+				{
+					Name: "Tag3",
+					Type: "struct",
+					Tags: textra.Tags{
+						{"json", "tag3", nil},
+						{"sql", "tag3", []string{"pk"}},
+					},
+				},
+			},
+		},
 		{"all but 1", []string{"Tag2", "Tag3", "Tag4"},
 			textra.Struct{
 				{
@@ -493,7 +524,6 @@ func TestRemoveFields(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
 			got := data.RemoveFields(tt.fields...)
 			if !checkEqual(t, got, tt.want) {
 				t.Errorf("TestRemoveFields() = %v, want %v", got, tt.want)
