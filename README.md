@@ -1,6 +1,6 @@
 # Textra
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/ravsii/textra.svg)](https://pkg.go.dev/github.com/ravsii/textra) [![codecov](https://codecov.io/gh/ravsii/textra/branch/main/graph/badge.svg?token=C8WA38GNFV)](https://codecov.io/gh/ravsii/textra)
+[![Go Reference](https://pkg.go.dev/badge/github.com/ravsii/textra.svg)](https://pkg.go.dev/github.com/ravsii/textra) [![codecov](https://codecov.io/gh/ravsii/textra/branch/main/graph/badge.svg?token=C8WA38GNFV)](https://codecov.io/gh/ravsii/textra) [![Go Report Card](https://goreportcard.com/badge/github.com/ravsii/textra)](https://goreportcard.com/report/github.com/ravsii/textra)
 
 Textra is a zero-dependency, simple and fast struct tags parser library. It also has json tags for all structs, in case of JSON output.
 
