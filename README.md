@@ -2,9 +2,9 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/ravsii/textra.svg)](https://pkg.go.dev/github.com/ravsii/textra) [![codecov](https://codecov.io/gh/ravsii/textra/branch/main/graph/badge.svg?token=C8WA38GNFV)](https://codecov.io/gh/ravsii/textra)
 
-Textra is a simple and fast struct tags parser library. It also has json tags for all structs, in case of JSON output.
+Textra is a zero-dependency, simple and fast struct tags parser library. It also has json tags for all structs, in case of JSON output.
 
-_Initially I built it for another private project, but decided to try to open-source it, since it could be useful for someone. Because of that it has some features that feels redundant, like having field type as a part of returned data_
+Initially I built it for another private project, but decided to try to open source it, since it could be useful for someone. Because of that, it has some features that feel redundant, like having field type as a part of returned data
 
 ## Installation
 
@@ -25,8 +25,8 @@ type Tester struct {
 }
 
 func main() {
- fields := textra.Extract((*Tester)(nil))
- for _, field := range fields {
+ basic := textra.Extract((*Tester)(nil))
+ for _, field := range basic {
   fmt.Println(field)
  }
 }
@@ -40,48 +40,66 @@ WithTags(string):[json:"with_tags" sql:"with_tag"]
 SqlOnly(string):[sql:"sql_only"]
 ```
 
-You can look at return types at [go.doc](https://pkg.go.dev/github.com/Ravcii/textra), basically it returns a slice of fields with its types (as strings) and a slice of Tags for each field.
+You can look at return types at [pkg.go.dev](https://pkg.go.dev/github.com/Ravcii/textra), but basically it returns a slice of fields with its types (as strings) and a slice of Tags for each field.
 
 Now let's apply some functions:
 
 ```go
-fields := textra.Extract((*Tester)(nil)).RemoveEmpty()
+ removed := basic.RemoveEmpty()
+ for _, field := range removed {
+  fmt.Println(field)
+ }
 ```
 
 ```text
+SqlOnly(*[]string):[pg:"sql_only" sql:"sql_only"]
 WithTag(string):[json:"with_tag,omitempty"]
-WithTags(string):[json:"with_tags" sql:"with_tag"]
-SqlOnly(string):[sql:"sql_only"]
+WithTags(*string):[json:"with_tags" sql:"with_tag"]
 ```
 
 What if we care only about SQL tags?
 
 ```go
-fields := textra.Extract((*Tester)(nil)).RemoveEmpty().Only("sql")
+ onlySQL := removed.OnlyTag("sql")
+ for _, field := range onlySQL {
+  fmt.Println(field)
+ }
 ```
 
 ```text
-{WithTags string sql:"with_tag"}
-{SqlOnly string sql:"sql_only"}
+SqlOnly(*[]string):sql:"sql_only"
+WithTags(*string):sql:"with_tag"
 ```
 
-_Only() is a bit special as it returns a Field of a different type, with `Tag` rather than `Tags`_
+_Only() is a bit special as it returns a Field of a different type, with `Tag` rather than `Tags`(=`[]Tag`)_
 
-Although it may be redundant, it also parses types a their string representation (for easier comparsion or output, if you need it)
+API is built like standard's `time` package, where chaining function will create new values, instead of modifying them.
+
+Although it may be redundant, it also parses types a their string representation (for easier comparison or output, if you need it)
 
 ```go
 type Types struct {
- intType         int
- byteType        byte
- runeType        rune
- stringType      string
- booleanType     bool
- sliceStringType []string
- mapType         map[string]string
- chanType        chan int
- funcType        func() error
- importType      time.Time
- pointerType     *string
+ intType        int
+ intPType       *int
+ byteType       byte
+ bytePType      *byte
+ byteArrType    []byte
+ byteArrPType   []*byte
+ bytePArrPType  *[]*byte
+ runeType       rune
+ runePType      *rune
+ stringType     string
+ stringPType    *string
+ booleanType    bool
+ booleanPType   *bool
+ mapType        map[string]string
+ mapPType       map[*string]*string
+ mapPImportType map[*string]*time.Time
+ chanType       chan int
+ funcType       func() error
+ funcParamsType func(arg1 int, arg2 string, arg3 map[*string]*time.Time) (int, error)
+ importType     time.Time
+ pointerType    *string
 }
 
 func main() {
@@ -94,26 +112,29 @@ func main() {
 
 ```text
 intType int
+intPType *int
 byteType uint8
+bytePType *uint8
+byteArrType []uint8
+byteArrPType []*uint8
+bytePArrPType *[]*uint8
 runeType int32
+runePType *int32
 stringType string
+stringPType *string
 booleanType bool
-sliceStringType slice
-mapType map
+booleanPType *bool
+mapType map[string]string
+mapPType map[*string]*string
+mapPImportType map[*string]*time.Time
 chanType chan
-funcType func
+funcType func() error
+funcParamsType func(int, string, map[*string]*time.Time) int, error
 importType time.Time
 pointerType *string
 ```
 
 ### TODO
 
-- [x] **Better README.md** _(i hope)_
-- [x] Add blacklisting (RemoveFields)
 - [ ] Examples for go.dev
-- [x] Some sugar for common tags
-  - [x] ByName to get tag for each field
-  - [x] Omitempty for "\*,omitempty"
-  - [x] Ignored for "-"
-- [x] Better string representation
 - [ ] ...?

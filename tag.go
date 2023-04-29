@@ -2,8 +2,6 @@ package textra
 
 import (
 	"strings"
-
-	"golang.org/x/exp/slices"
 )
 
 // Tags is a slice of tags.
@@ -22,7 +20,6 @@ func (t Tags) ByName(name string) (Tag, bool) {
 
 func (t Tags) String() string {
 	tags := make([]string, 0, len(t))
-
 	for _, tag := range t {
 		tags = append(tags, tag.String())
 	}
@@ -47,7 +44,9 @@ type Tag struct {
 
 // OmitEmpty returns true if t.Optional contains "omitempty".
 func (t Tag) OmitEmpty() bool {
-	return slices.Contains(t.Optional, "omitempty")
+	m := toUniqueMap(t.Optional...)
+	_, ok := m["omitempty"]
+	return ok
 }
 
 // Ignored is a shortcut for t.Value == "-".
@@ -56,14 +55,10 @@ func (t Tag) Ignored() bool {
 }
 
 func (t Tag) String() string {
-	b := strings.Builder{}
-	b.WriteString(t.Tag + ":\"" + t.Value)
-
+	s := t.Tag + `:"` + t.Value
 	for _, v := range t.Optional {
-		b.WriteString("," + v)
+		s += "," + v
 	}
-
-	b.WriteRune('"')
-
-	return b.String()
+	s += `"`
+	return s
 }
