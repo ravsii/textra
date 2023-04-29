@@ -1,9 +1,5 @@
 package textra
 
-import (
-	"strings"
-)
-
 // Struct represents a single struct.
 type Struct []Field
 
@@ -22,7 +18,7 @@ func (s Struct) ByTagName(tag string) Struct {
 	return filtered
 }
 
-// ByTagNameAny returns a slice of fields which contain at least one tag of the given tags.
+// ByTagNameAny returns a slice of fields which contain at least one tag.
 func (s Struct) ByTagNameAny(tags ...string) Struct {
 	filtered := make(Struct, 0)
 	tagsUnique := toUniqueMap(tags...)
@@ -38,7 +34,7 @@ func (s Struct) ByTagNameAny(tags ...string) Struct {
 	return filtered
 }
 
-// ByTagNameAll returns a slice of fields which contain all of the given tags.
+// ByTagNameAll returns a slice of fields which contain all of the tags.
 func (s Struct) ByTagNameAll(tags ...string) Struct {
 	filtered := make(Struct, 0)
 	tagsUnique := toUniqueMap(tags...)
@@ -86,20 +82,19 @@ func (s Struct) FilterFunc(fn func(Field) bool) Struct {
 
 // RemoveEmpty removes any field from a Struct that has an empty "Tags" field.
 func (s Struct) RemoveEmpty() Struct {
-	removed := 0
-	for i, field := range s {
-		if len(field.Tags) == 0 {
-			s[i] = s[len(s)-removed-1]
-			removed++
+	filtered := make(Struct, 0)
+	for _, field := range s {
+		if len(field.Tags) > 0 {
+			filtered = append(filtered, field)
 		}
 	}
 
-	return s[:len(s)-removed]
+	return filtered
 }
 
-// Remove removes fields by their name from a Struct and returns a new Struct.
-func (s Struct) Remove(fields ...string) Struct {
-	filtered := make(Struct, 0)
+// RemoveFields removes fields by their names from a Struct and returns a new Struct.
+func (s Struct) RemoveFields(fields ...string) Struct {
+	filtered := make(Struct, 0, len(s)-len(fields))
 	fieldsUnique := toUniqueMap(fields...)
 	for _, field := range s {
 		if _, ok := fieldsUnique[field.Name]; !ok {
@@ -129,9 +124,9 @@ func (s Struct) OnlyTag(name string) []FieldTag {
 }
 
 func (s Struct) String() string {
-	b := strings.Builder{}
+	var str string
 	for _, field := range s {
-		b.WriteString(field.String())
+		str += field.String()
 	}
-	return b.String()
+	return str
 }
